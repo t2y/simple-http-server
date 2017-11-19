@@ -1,0 +1,6 @@
+include LICENSE
+include MANIFEST.in
+include README.md
+recursive-include public *
+recursive-include simple-http-server *.py
+recursive-include tests *.py

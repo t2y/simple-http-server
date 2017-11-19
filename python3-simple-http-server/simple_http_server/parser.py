@@ -4,7 +4,7 @@ from .request import Request
 RE_HTTP_PATTERN = re.compile(r'(?P<method>.*) (?P<path>.*?) (?P<version>.*?)')
 
 
-async def parse_http(data):
+async def parse_http(data: str) -> Request:
     m = re.match(RE_HTTP_PATTERN, data)
     if m is None:
         return None

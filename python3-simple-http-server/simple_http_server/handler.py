@@ -3,9 +3,11 @@ import os.path
 import urllib.request
 from mimetypes import MimeTypes
 from pathlib import Path
+from typing import Optional, Tuple
 
-from .status import Status
+from .request import Request
 from .response import Response
+from .status import Status
 
 PUBLIC_PATH = 'public'  # TODO: pass arbitrary path from cli
 BAD_REQUEST_HTML = open('%s/400.html' % PUBLIC_PATH, 'rb').read()
@@ -17,7 +19,7 @@ log = logging.getLogger('simple-http-server')
 mime = MimeTypes()
 
 
-def handle_request(request):
+def handle_request(request: Request) -> Response:
     if request is None:
         return Response(Status.BAD_REQUEST, HTML_MIME, BAD_REQUEST_HTML)
 
@@ -25,12 +27,12 @@ def handle_request(request):
     resource_path = Path(PUBLIC_PATH).joinpath(relative_path)
     log.debug('resource_path: %s' % resource_path)
 
-    if not os.path.normpath(resource_path).startswith(PUBLIC_PATH):
+    if not os.path.normpath(str(resource_path)).startswith(PUBLIC_PATH):
         return Response(Status.FORBIDDEN, HTML_MIME, FORBIDDEN_HTML)
 
     if resource_path.is_file():
-        url = urllib.request.pathname2url(bytes(resource_path))
-        mime_type = mime.guess_type(url)
+        url = urllib.request.pathname2url(str(resource_path))
+        mime_type: Tuple[Optional[str], ...] = mime.guess_type(url)
         body = open(resource_path, 'rb').read()
         return Response(Status.OK, mime_type[0], body)
 

@@ -12,7 +12,7 @@ logging.basicConfig(
 log = logging.getLogger('simple-http-server')
 
 
-def parse_argument():
+def parse_argument() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.set_defaults(
         host='127.0.0.1',
@@ -42,9 +42,9 @@ def parse_argument():
     return args
 
 
-def main():
+def main() -> None:
     args = parse_argument()
-    log.debug(args)
+    log.debug(str(args))
 
     loop = asyncio.get_event_loop()
     coro = asyncio.start_server(http, args.host, args.port, loop=loop)

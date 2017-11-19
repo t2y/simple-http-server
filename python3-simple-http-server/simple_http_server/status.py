@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import cast
 
 
 class Status(Enum):
@@ -8,5 +9,5 @@ class Status(Enum):
     NOT_FOUND = '404 NotFound'
     INTERNAL_SERVER_ERROR = '500 InternalServerError'
 
-    def code(self):
-        return self.value
+    def code(self) -> str:
+        return cast(str, self.value)

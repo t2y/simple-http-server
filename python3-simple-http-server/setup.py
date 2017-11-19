@@ -1,5 +1,3 @@
-import sys
-
 from setuptools import setup
 
 
@@ -27,7 +25,7 @@ setup(
     ],
     entry_points = {
         'console_scripts': [
-            'simple-http-server=simple_http_server.main:main',
+            'simple-http-server = simple_http_server.main:main',
         ],
     },
 )

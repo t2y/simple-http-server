@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os.path
 import urllib.request
@@ -9,26 +10,22 @@ from .request import Request
 from .response import Response
 from .status import Status
 
-PUBLIC_PATH = 'public'  # TODO: pass arbitrary path from cli
-BAD_REQUEST_HTML = open('%s/400.html' % PUBLIC_PATH, 'rb').read()
-FORBIDDEN_HTML = open('%s/403.html' % PUBLIC_PATH, 'rb').read()
-NOT_FOUND_HTML = open('%s/404.html' % PUBLIC_PATH, 'rb').read()
 HTML_MIME = 'text/html;charset=utf8'
 
 log = logging.getLogger('simple-http-server')
 mime = MimeTypes()
 
 
-def handle_request(request: Request) -> Response:
+def handle_request(args: argparse.Namespace, request: Request) -> Response:
     if request is None:
-        return Response(Status.BAD_REQUEST, HTML_MIME, BAD_REQUEST_HTML)
+        return Response(Status.BAD_REQUEST, HTML_MIME, args.bad_request_html)
 
     relative_path = request.path[1:]
-    resource_path = Path(PUBLIC_PATH).joinpath(relative_path)
+    resource_path = Path(args.public_path).joinpath(relative_path)
     log.debug('resource_path: %s' % resource_path)
 
-    if not os.path.normpath(str(resource_path)).startswith(PUBLIC_PATH):
-        return Response(Status.FORBIDDEN, HTML_MIME, FORBIDDEN_HTML)
+    if not os.path.normpath(str(resource_path)).startswith(args.public_path):
+        return Response(Status.FORBIDDEN, HTML_MIME, args.forbidden_html)
 
     if resource_path.is_file():
         url = urllib.request.pathname2url(str(resource_path))
@@ -42,4 +39,4 @@ def handle_request(request: Request) -> Response:
             body = open(index_html, 'rb').read()
             return Response(Status.OK, HTML_MIME, body)
 
-    return Response(Status.NOT_FOUND, HTML_MIME, NOT_FOUND_HTML)
+    return Response(Status.NOT_FOUND, HTML_MIME, args.not_found_html)

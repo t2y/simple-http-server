@@ -17,6 +17,7 @@ def parse_argument() -> argparse.Namespace:
     parser.set_defaults(
         host='127.0.0.1',
         port=8080,
+        top_dir='.',
         verbose=False,
     )
 
@@ -27,6 +28,10 @@ def parse_argument() -> argparse.Namespace:
     parser.add_argument(
         '--port',
         help='set port number',
+    )
+    parser.add_argument(
+        '--top-dir', dest='top_dir',
+        help='set top directory',
     )
 
     # for debug
@@ -47,7 +52,7 @@ def main() -> None:
     log.debug(str(args))
 
     loop = asyncio.get_event_loop()
-    coro = asyncio.start_server(http, args.host, args.port, loop=loop)
+    coro = asyncio.start_server(http(args), args.host, args.port, loop=loop)
     server = loop.run_until_complete(coro)
     log.info('start simple http server, %s:%d' % (args.host, args.port))
 
